@@ -1,3 +1,14 @@
+def print_memory_table(memory):
+
+    print("\nTabla de Memoria:")
+    print("-" * 50)
+    print("{:<10} {:<10} {:<10} {:<10}".format("Página", "Base", "Límite", "Tamaño"))
+    print("-" * 50)
+    for i, (base, limit) in enumerate(memory):
+        size = limit - base + 1
+        print("{:<10} {:<10} {:<10} {:<10}".format(i, base, limit, size))
+    print("-" * 50, "\n")
+
 def first_fit(memory, required, index):
 
     for i in range(len(memory)):
@@ -14,6 +25,8 @@ def first_fit(memory, required, index):
             #paso 3: actualizar la memoria
 
             memory[index] = (new_base, limit)
+            print(f"Después de asignar {required} espacios en la página {(index+i) % len(memory)}:")
+            print_memory_table(memory)
             return  memory, new_base, limit, new_index
 
         else:
@@ -39,10 +52,12 @@ memory = [
 idx= 1
 required = [50,1000,70,80,90,100,10]
 
+print("Estado inicial de la memoria:")
+print_memory_table(memory)
+
 for i in required:
     try:
         memory, new_base, new_limit, idx = first_fit(memory, i, idx)
-        print(f"Espacio asignado para tamaño {i}: Nueva base = {new_base}, Nuevo límite = {new_limit}, nuevo indice = {idx}")
 
     except Exception as e:
-        print(f"Error: no hay espacio, {e}")
+        print(f"Error: no se puede almacenar {i}.\n")
