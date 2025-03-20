@@ -17,11 +17,9 @@ def first_fit(memory, required, index):
             if new_limit > 0:
                 memory[pos] = (new_base, new_limit)
             else:
+                new_index = pos
                 memory.pop(pos)
+
             return  (memory, new_base, new_limit, new_index if memory else 0)
 
-        else:
-            continue
-
     return  None
-
