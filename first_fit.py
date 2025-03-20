@@ -1,63 +1,27 @@
-def print_memory_table(memory):
-
-    print("\nTabla de Memoria:")
-    print("-" * 50)
-    print("{:<10} {:<10} {:<10} {:<10}".format("Página", "Base", "Límite", "Tamaño"))
-    print("-" * 50)
-    for i, (base, limit) in enumerate(memory):
-        size = limit - base + 1
-        print("{:<10} {:<10} {:<10} {:<10}".format(i, base, limit, size))
-    print("-" * 50, "\n")
-
 def first_fit(memory, required, index):
 
-    for i in range(len(memory)):
-        #paso 1: obtener segmento objetivo
+    n = len(memory)
+    if n == 0:
+        return None
 
-        base, limit = memory[(index+i) % len(memory)]
+    for i in range(n):
+        pos = (index + i) % n
+        base, limit = memory[pos]
 
-        #paso 2: verificar si el segmento objetivo es suficiente
+        if limit >= required:
 
-        if base + required -1 <= limit:
             new_base = base + required
-            new_index = ((index+i) % len(memory))+1
+            new_limit = limit - required
+            new_index = (pos+1) % len(memory)
 
-            #paso 3: actualizar la memoria
-
-            memory[index] = (new_base, limit)
-            print(f"Después de asignar {required} espacios en la página {(index+i) % len(memory)}:")
-            print_memory_table(memory)
-            return  memory, new_base, limit, new_index
+            if new_limit > 0:
+                memory[pos] = (new_base, new_limit)
+            else:
+                memory.pop(pos)
+            return  (memory, new_base, new_limit, new_index if memory else 0)
 
         else:
             continue
 
-    #paso 4: si no se encuentra un segmento suficiente en toda la memoria, se retorna none
     return  None
 
-
-memory = [
-    (0, 99),   # Página 0: Base = 0, Límite = 99 (Tamaño = 100)
-    (100, 199),# Página 1: Base = 100, Límite = 199 (Tamaño = 100)
-    (200, 299),# Página 2: Base = 200, Límite = 299 (Tamaño = 100)
-    (300, 399),# Página 3: Base = 300, Límite = 399 (Tamaño = 100)
-    (400, 499),# Página 4: Base = 400, Límite = 499 (Tamaño = 100)
-    (500, 599),# Página 5: Base = 500, Límite = 599 (Tamaño = 100)
-    (600, 699),# Página 6: Base = 600, Límite = 699 (Tamaño = 100)
-    (700, 799),# Página 7: Base = 700, Límite = 799 (Tamaño = 100)
-    (800, 899),# Página 8: Base = 800, Límite = 899 (Tamaño = 100)
-    (900, 999) # Página 9: Base = 900, Límite = 999 (Tamaño = 100)
-]
-
-idx= 1
-required = [50,1000,70,80,90,100,10]
-
-print("Estado inicial de la memoria:")
-print_memory_table(memory)
-
-for i in required:
-    try:
-        memory, new_base, new_limit, idx = first_fit(memory, i, idx)
-
-    except Exception as e:
-        print(f"Error: no se puede almacenar {i}.\n")
